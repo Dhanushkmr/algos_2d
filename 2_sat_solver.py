@@ -1,4 +1,5 @@
 from collections import defaultdict
+import networkx as nx
 
 class variable:
     __cache = {}
@@ -98,7 +99,8 @@ if __name__ == '__main__':
                 continue
             cnf.append(literals[:-1])
     implication_graph = implication_graph(cnf)
-    sccs = strongly_connected_components(implication_graph)
+    print(implication_graph)
+    sccs = strongly_connected_components(implication_graph)[::-1]
     bool_assn = {}
     breaker = False
     for scc in sccs:
@@ -118,6 +120,7 @@ if __name__ == '__main__':
         print("SATISFIABLE")
         res = ""
         for key in sorted(list(bool_assn.keys())):
+            print(key)
             res += f"{int(bool_assn[key])}"
         print(res)
     
