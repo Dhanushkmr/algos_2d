@@ -59,7 +59,7 @@ def strongly_connected_components(graph):
     result = []
 
     def tarjan(node):
-        nonlocal index_counter
+        nonlocal index_counter, result
         node.index = index_counter
         node.lowlink = index_counter
         index_counter += 1
@@ -81,7 +81,7 @@ def strongly_connected_components(graph):
                 if neighbor == node: 
                     break
             component = tuple(connected_component)
-            result.append(component)
+            result = [component] + result
 
     for node in graph:
         if node.lowlink == None:
@@ -100,7 +100,7 @@ if __name__ == '__main__':
             cnf.append(literals[:-1])
     implication_graph = implication_graph(cnf)
     print(implication_graph)
-    sccs = strongly_connected_components(implication_graph)[::-1]
+    sccs = strongly_connected_components(implication_graph)
     bool_assn = {}
     breaker = False
     for scc in sccs:
