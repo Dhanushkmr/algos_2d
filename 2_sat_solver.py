@@ -5,6 +5,8 @@ class variable:
     __cache = {}
     def __init__(self, literal):
         self.lit = literal
+        self.index = None
+        self.lowlink = None
 
     def __new__(cls, x):
         if x in variable.__cache:
@@ -52,28 +54,26 @@ def implication_graph(cnf):
 
 def strongly_connected_components(graph):
 
-    index_counter = [0]
+    index_counter = 0
     stack = []
     result = []
-    lowlinks = {}
-    index = {}
 
     def tarjan(node):
-
-        index[node] = index_counter[0]
-        lowlinks[node] = index_counter[0]
-        index_counter[0] += 1
+        nonlocal index_counter
+        node.index = index_counter
+        node.lowlink = index_counter
+        index_counter += 1
         stack.append(node)
 
         neighbors = graph.get(node, [])
         for neighbor in neighbors:
-            if neighbor not in lowlinks:
+            if neighbor.lowlink == None:
                 tarjan(neighbor)
-                lowlinks[node] = min(lowlinks[node],lowlinks[neighbor])
+                node.lowlink = min(node.lowlink, neighbor.lowlink)
             elif neighbor in stack:
-                lowlinks[node] = min(lowlinks[node],index[neighbor])
+                node.lowlink = min(node.lowlink, neighbor.index)
 
-        if lowlinks[node] == index[node]:
+        if node.lowlink == node.index:
             connected_component = []
             while True:
                 neighbor = stack.pop()
@@ -84,7 +84,7 @@ def strongly_connected_components(graph):
             result.append(component)
 
     for node in graph:
-        if node not in lowlinks:
+        if node.lowlink == None:
             tarjan(node)
 
     return result
