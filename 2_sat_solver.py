@@ -1,8 +1,8 @@
 from collections import defaultdict
-import networkx as nx
 
 class variable:
     __cache = {}
+
     def __init__(self, literal):
         self.lit = literal
         self.index = None
@@ -86,7 +86,6 @@ def strongly_connected_components(graph):
     for node in graph:
         if node.lowlink == None:
             tarjan(node)
-
     return result
     
 
