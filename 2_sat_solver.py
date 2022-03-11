@@ -87,9 +87,9 @@ def strongly_connected_components(graph):
         if node.lowlink == None:
             tarjan(node)
     return result
-    
 
-if __name__ == '__main__':
+
+def main():
     cnf = []
     with open("largeSat.cnf") as f:
         for line in f.readlines():
@@ -97,31 +97,30 @@ if __name__ == '__main__':
             if literals[0] == "c" or literals[0] == "p":
                 continue
             cnf.append(literals[:-1])
-    implication_graph = implication_graph(cnf)
-    print(implication_graph)
-    sccs = strongly_connected_components(implication_graph)
+    graph = implication_graph(cnf)
+    print(graph)
+    sccs = strongly_connected_components(graph)
     bool_assn = {}
-    breaker = False
     for scc in sccs:
         check_negation = set()
         for node in scc:
             if node.boolean_var() in check_negation:
                 print("UNSATISFIABLE")
-                breaker == True
-                break
+                return
             if node.is_negated():
                 bool_assn[node.boolean_var()] = False
             else:
                 bool_assn[node.boolean_var()] = True
-        if breaker:
-            break
-    if not breaker:
-        print("SATISFIABLE")
-        res = ""
-        for key in sorted(list(bool_assn.keys())):
-            print(key)
-            res += f"{int(bool_assn[key])}"
-        print(res)
+
+    print("SATISFIABLE")
+    res = ""
+    for key in sorted(list(bool_assn.keys())):
+        res += f"{int(bool_assn[key])}"
+    print(res)
+    
+
+if __name__ == '__main__':
+    main()
     
 
     
