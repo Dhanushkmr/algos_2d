@@ -1,5 +1,6 @@
 from collections import defaultdict
 import logging
+import argparse
 
 class Variable:
     __cache = {}
@@ -101,6 +102,8 @@ def main(file_path):
     graph = implication_graph(cnf)
     logging.debug(graph)
     sccs = strongly_connected_components(graph)
+    logging.debug(sccs)
+
     bool_assn = {}
     for scc in sccs:
         check_negation = set()
@@ -116,7 +119,8 @@ def main(file_path):
             else:
                 bool_assn[node.boolean_var()] = True
 
-    logging.info("UNSATISFIABLE")
+    print("SATISFIABLE")
+    logging.info("SATISFIABLE")
     res = ""
     for key in sorted(list(bool_assn.keys())):
         res += f"{int(bool_assn[key])}"
@@ -125,6 +129,10 @@ def main(file_path):
 
 if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--path', type=str, help='Path to CNF file', default='largeSat.cnf')
+    args = parser.parse_args()
+
     logging.basicConfig(handlers=[logging.FileHandler(filename="test.log",
                                                     encoding='utf-8', mode='w')],
                         format="%(asctime)s %(name)s:%(levelname)s:%(message)s",
@@ -132,8 +140,7 @@ if __name__ == '__main__':
                         level=logging.DEBUG)
     
 
-    file_path = "largeUnsat.cnf"
-    main(file_path)
+    main(args.path)
 
 # Linear Time complexity
 
