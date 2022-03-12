@@ -35,7 +35,7 @@ class Variable:
 
     def boolean_var(self):
         if self.is_negated():
-            return self.lit[-1]
+            return self.lit[1:]
         return self.lit
     
     def get_negated(self):
@@ -106,12 +106,11 @@ def main(file_path):
 
     bool_assn = {}
     for scc in sccs:
-        check_negation = set()
+        check_negation = set([i.lit for i in scc])
         for node in scc:
-
             # Fails if there exists positive and negative literal in the within the same strongly connected component
-            if node.boolean_var() in check_negation:
-                print("UNSATISFIABLE")
+            if node.get_negated().lit in check_negation:
+                print("UNSATISFIABLE", check_negation)
                 logging.info("UNSATISFIABLE")
                 return
             if node.is_negated():
