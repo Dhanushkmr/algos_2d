@@ -1,0 +1,7 @@
+c Checking s8 equivalent ripple-carry and carry-select adders
+p cnf 3 3
+3 -1 0
+-3 1 0
+-3 -1 0
+1 -2 0
+1 2 0
