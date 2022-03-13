@@ -17,9 +17,7 @@ class RandomizedGraph:
         # Set all literals assignments to None first
         self.literals[lit_0.boolean_var()] = None
         self.literals[lit_1.boolean_var()] = None
-        self.clauses.append(((lit_0.boolean_var(), lit_0.is_negated()),
-                             (lit_1.boolean_var(), lit_1.is_negated())))
-
+        self.clauses.append((lit_0, lit_1))
 
 # Random algorithm
 
@@ -47,12 +45,15 @@ def randomized_dfs(file_path : str ="./largeSat.cnf", y : int = 100):
 
         for _ in range(2 * (len(graph.literals) ** 2)):
             satisfiable = True
-            value = []
+            unsatisfied_clauses = []
+
             for clause in graph.clauses:
-                if graph.literals[clause[0][0]] != clause[0][1] \
-                        and graph.literals[clause[1][0]] != clause[1][1]:
+                # Check for satisfiability
+                lit_0, lit_1 = clause[0], clause[1]
+                if graph.literals[lit_0.boolean_var()] != lit_0.is_negated() \
+                        and graph.literals[lit_1.boolean_var()] != lit_1.is_negated():
                     satisfiable = False
-                    value.append(clause)
+                    unsatisfied_clauses.append(clause)
 
             # If the algorithm terminates with a truth assignment, it clearly returns a correct answer
             if satisfiable:
@@ -60,23 +61,25 @@ def randomized_dfs(file_path : str ="./largeSat.cnf", y : int = 100):
                 logging.info("Random DFS found satisfiable assignment")
 
                 return time.time() - start_time
+
             else:
                 # random_clause here is a nested tuple ((lit1, assign), (lit2, assign))
                 # Pick a random clause and flip the assignment of one of the literals
-                random_clause = random.choice(value)
-                
-                if graph.literals[random_clause[0][0]] != random_clause[0][1] \
-                        and graph.literals[random_clause[1][0]] != random_clause[1][1]:
+                random_clause = random.choice(unsatisfied_clauses)
+                lit_0, lit_1 = clause[0], clause[1]
+
+                if graph.literals[lit_0.boolean_var()] != lit_0.is_negated() \
+                        and graph.literals[lit_1.boolean_var()] != random_clause[1].is_negated():
                     random_literal = random.choice(
-                        [random_clause[0][0], random_clause[1][0]])
+                        [lit_0.boolean_var(), lit_1.boolean_var()])
                     assign = graph.literals[random_literal]
                     graph.literals[random_literal] = not assign
-                elif graph.literals[random_clause[0][0]] != random_clause[0][1]:
-                    graph.literals[random_clause[0]
-                                  [0]] = random_clause[0][1]
-                elif graph.literals[random_clause[1][0]] != random_clause[1][1]:
-                    graph.literals[random_clause[1]
-                                  [0]] = random_clause[1][1]
+                elif graph.literals[lit_0.boolean_var()] != lit_0.is_negated():
+                    graph.literals[lit_0.boolean_var()] = random_clause[0].is_negated()
+                
+                elif graph.literals[lit_1.boolean_var()] != lit_1.is_negated():
+                    graph.literals[lit_1.boolean_var()] = random_clause[1].is_negated()
+
 
     print("Random DFS found unsatisfiable assignment")
     logging.info("Random DFS found unsatisfiable assignment")
