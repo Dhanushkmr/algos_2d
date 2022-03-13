@@ -9,8 +9,7 @@ import argparse
 
 class RandomizedGraph:
     def __init__(self):
-        # self.clauses is meant to be a list of nested tuple ((lit1, assign), (lit2, assign))
-        self.clauses = []
+        self.clauses = [] # [variable0, variable1]
         self.literals = {}
 
     def add_clause(self, lit_0: Variable, lit_1: Variable):
