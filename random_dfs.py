@@ -5,7 +5,7 @@ import time
 import logging
 import argparse
 
-
+# Reference : https://ermongroup.github.io/cs323-notes/logic/random_walk/
 
 class RandomizedGraph:
     def __init__(self):
