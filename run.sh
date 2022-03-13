@@ -1,0 +1,1 @@
+python deterministic_dfs.py --path ./largeSat.cnf

@@ -45,15 +45,36 @@ class Variable:
         return Variable("-"+self.boolean_var())
 
 
-def implication_graph(cnf):
-    graph = defaultdict(list)
-    for clause in cnf:
-        if len(clause) == 2:
-            lit_0 = Variable(clause[0])
-            lit_1 = Variable(clause[1])
-            graph[lit_1.get_negated()].append(lit_0)
-            graph[lit_0.get_negated()].append(lit_1)
-    return graph
+def deterministic_dfs(file_path):
+    start_time = time.time()
+
+    graph = get_graph(file_path)
+    logging.debug(graph)
+    sccs = strongly_connected_components(graph)
+
+    bool_assn = {}
+    for scc in sccs:
+        check_negation = set([i.lit for i in scc])
+        for node in scc:
+            # Fails if there exists positive and negative literal in the within the same strongly connected component
+            if node.get_negated().lit in check_negation:
+                print("UNSATISFIABLE", check_negation)
+                logging.info("UNSATISFIABLE")
+                return time.time() - start_time
+            if node.is_negated():
+                bool_assn[node.boolean_var()] = False
+            else:
+                bool_assn[node.boolean_var()] = True
+
+    print("SATISFIABLE")
+    logging.info("SATISFIABLE")
+    res = ""
+    for key in sorted(list(bool_assn.keys())):
+        res += f"{int(bool_assn[key])}"
+    logging.debug(res)
+
+    return time.time() - start_time
+
 
 def strongly_connected_components(graph):
     
@@ -92,9 +113,17 @@ def strongly_connected_components(graph):
     return result
 
 
-def deterministic_dfs(file_path):
-    start_time = time.time()
+def implication_graph(cnf):
+    graph = defaultdict(list)
+    for clause in cnf:
+        if len(clause) == 2:
+            lit_0 = Variable(clause[0])
+            lit_1 = Variable(clause[1])
+            graph[lit_1.get_negated()].append(lit_0)
+            graph[lit_0.get_negated()].append(lit_1)
+    return graph
 
+def get_graph(file_path):
     cnf = []
     with open(file_path) as f:
         for line in f.readlines():
@@ -103,34 +132,7 @@ def deterministic_dfs(file_path):
                 continue
             cnf.append(literals[:-1])
     graph = implication_graph(cnf)
-    logging.debug(graph)
-    sccs = strongly_connected_components(graph)
-    logging.debug(sccs)
-
-    bool_assn = {}
-    for scc in sccs:
-        check_negation = set([i.lit for i in scc])
-        for node in scc:
-            # Fails if there exists positive and negative literal in the within the same strongly connected component
-            if node.get_negated().lit in check_negation:
-                print("UNSATISFIABLE", check_negation)
-                logging.info("UNSATISFIABLE")
-                return
-            if node.is_negated():
-                bool_assn[node.boolean_var()] = False
-            else:
-                bool_assn[node.boolean_var()] = True
-
-    print("SATISFIABLE")
-    logging.info("SATISFIABLE")
-    res = ""
-    for key in sorted(list(bool_assn.keys())):
-        res += f"{int(bool_assn[key])}"
-    logging.debug(res)
-    duration = time.time() - start_time
-    logging.info(f"Time taken: {duration}")
-    return duration
-    
+    return graph
 
 if __name__ == '__main__':
 
