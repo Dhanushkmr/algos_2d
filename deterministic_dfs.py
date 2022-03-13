@@ -35,6 +35,7 @@ class Variable:
         return False
 
     def boolean_var(self):
+        # Returns the absolute literal
         if self.is_negated():
             return self.lit[1:]
         return self.lit
@@ -43,12 +44,15 @@ class Variable:
         if self.is_negated():
             return Variable(self.boolean_var())
         return Variable("-"+self.boolean_var())
+    
 
 
 def deterministic_dfs(file_path):
     start_time = time.time()
 
-    graph = get_graph(file_path)
+    clauses = extract_cnf(file_path)
+    graph = implication_graph(clauses)
+    
     logging.debug(graph)
     sccs = strongly_connected_components(graph)
 
@@ -58,16 +62,21 @@ def deterministic_dfs(file_path):
         for node in scc:
             # Fails if there exists positive and negative literal in the within the same strongly connected component
             if node.get_negated().lit in check_negation:
-                print("UNSATISFIABLE", check_negation)
-                logging.info("UNSATISFIABLE")
+                print("Deterministic DFS found unsatisfiable assignment",
+                      check_negation)
+                logging.info(
+                    "Deterministic DFS found unsatisfiable assignment")
+
                 return time.time() - start_time
+
             if node.is_negated():
                 bool_assn[node.boolean_var()] = False
             else:
                 bool_assn[node.boolean_var()] = True
 
-    print("SATISFIABLE")
-    logging.info("SATISFIABLE")
+    print("Deterministic DFS found satisfiable assignment")
+    logging.info("Deterministic DFS found satisfiable assignment")
+
     res = ""
     for key in sorted(list(bool_assn.keys())):
         res += f"{int(bool_assn[key])}"
@@ -123,7 +132,7 @@ def implication_graph(cnf):
             graph[lit_0.get_negated()].append(lit_1)
     return graph
 
-def get_graph(file_path):
+def extract_cnf(file_path):
     cnf = []
     with open(file_path) as f:
         for line in f.readlines():
@@ -131,8 +140,7 @@ def get_graph(file_path):
             if literals[0] == "c" or literals[0] == "p":
                 continue
             cnf.append(literals[:-1])
-    graph = implication_graph(cnf)
-    return graph
+    return cnf
 
 if __name__ == '__main__':
 

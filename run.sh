@@ -1,1 +1,1 @@
-python deterministic_dfs.py --path ./largeSat.cnf
+python main.py --path ./largeSat.cnf
