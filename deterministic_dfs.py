@@ -1,6 +1,7 @@
 from collections import defaultdict
 import logging
 import argparse
+import time
 
 class Variable:
     __cache = {}
@@ -91,7 +92,9 @@ def strongly_connected_components(graph):
     return result
 
 
-def main(file_path):
+def deterministic_dfs(file_path):
+    start_time = time.time()
+
     cnf = []
     with open(file_path) as f:
         for line in f.readlines():
@@ -124,6 +127,9 @@ def main(file_path):
     for key in sorted(list(bool_assn.keys())):
         res += f"{int(bool_assn[key])}"
     logging.debug(res)
+    duration = time.time() - start_time
+    logging.info(f"Time taken: {duration}")
+    return duration
     
 
 if __name__ == '__main__':
@@ -138,8 +144,7 @@ if __name__ == '__main__':
                         datefmt="%F %A %T",
                         level=logging.DEBUG)
     
-
-    main(args.path)
+    deterministic_dfs(args.path)
 
 # Linear Time complexity
 
