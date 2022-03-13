@@ -38,9 +38,10 @@ def randomized_dfs(file_path : str ="./largeSat.cnf", y : int = 100):
 
     graph = get_randomized_graph(file_path)
 
-
-
+    # Try for y times, and if after at most 2n**2 steps during variable, we still can't find a solution, then its false
     for _ in range(y):
+
+        # Start with random truth assignment
         for literal in graph.literals.keys():
             graph.literals[literal] = random.choice([True, False])
 
@@ -63,6 +64,7 @@ def randomized_dfs(file_path : str ="./largeSat.cnf", y : int = 100):
                 # random_clause here is a nested tuple ((lit1, assign), (lit2, assign))
                 # Pick a random clause and flip the assignment of one of the literals
                 random_clause = random.choice(value)
+                
                 if graph.literals[random_clause[0][0]] != random_clause[0][1] \
                         and graph.literals[random_clause[1][0]] != random_clause[1][1]:
                     random_literal = random.choice(
