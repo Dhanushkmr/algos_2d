@@ -7,16 +7,7 @@ import argparse
 
 # Reference : https://ermongroup.github.io/cs323-notes/logic/random_walk/
 
-class RandomizedGraph:
-    def __init__(self):
-        self.clauses = [] # [variable0, variable1]
-        self.literals = {}
 
-    def add_clause(self, lit_0: Variable, lit_1: Variable):
-        # Set all literals assignments to None first
-        self.literals[lit_0.boolean_var()] = None
-        self.literals[lit_1.boolean_var()] = None
-        self.clauses.append((lit_0, lit_1))
 
 # Random algorithm
 
@@ -62,7 +53,6 @@ def randomized_dfs(file_path : str ="./largeSat.cnf", y : int = 100):
                 return time.time() - start_time
 
             else:
-                # random_clause here is a nested tuple ((lit1, assign), (lit2, assign))
                 # Pick a random clause and flip the assignment of one of the literals
                 random_clause = random.choice(unsatisfied_clauses)
                 lit_0, lit_1 = clause[0], clause[1]
@@ -84,6 +74,17 @@ def randomized_dfs(file_path : str ="./largeSat.cnf", y : int = 100):
     logging.info("Random DFS found unsatisfiable assignment")
     return time.time() - start_time
 
+
+class RandomizedGraph:
+    def __init__(self):
+        self.clauses = []  # [variable0, variable1]
+        self.literals = {}
+
+    def add_clause(self, lit_0: Variable, lit_1: Variable):
+        # Set all literals assignments to None first
+        self.literals[lit_0.boolean_var()] = None
+        self.literals[lit_1.boolean_var()] = None
+        self.clauses.append((lit_0, lit_1))
 
 def get_randomized_graph(file_path):
     graph = RandomizedGraph()
